@@ -1,0 +1,62 @@
+{
+  "name": "seat-status-manager",
+  "author": "yang.li",
+  "version": "1.0.0",
+  "description": "座位状态管理工具",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "chcp 65001 &&  electron .",
+    "build": "chcp 65001 &&  electron-builder",
+    "dist": "electron-builder --publish=never",
+    "pack": "electron-builder --dir"
+  },
+  "keywords": [
+    "electron",
+    "seat",
+    "management",
+    "auto-start"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^22.0.0",
+    "electron-builder": "^24.0.0",
+    "vite": "^4.4.0"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "electron-store": "^8.1.0",
+    "auto-launch": "^5.0.5",
+    "vue": "^3.3.0",
+    "element-plus": "^2.3.0",
+    "@element-plus/icons-vue": "^2.1.0"
+  },
+  "build": {
+    "appId": "com.seat.manager",
+    "productName": "座位状态管理器",
+    "directories": {
+      "output": "build"
+    },
+    "files": [
+      "src/**/*",
+      "node_modules/**/*"
+    ],
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "src/assets/icon.png"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "src/assets/icon.png"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "src/assets/icon.png"
+    }
+  }
+}

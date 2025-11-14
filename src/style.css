@@ -1,0 +1,311 @@
+/* 重置和基础样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    overflow-x: hidden;
+}
+
+#app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 应用容器 */
+.app-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 头部样式 */
+.app-header {
+    background: linear-gradient(135deg, #409EFF 0%, #337ecc 100%);
+    color: white;
+    padding: 0 20px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-icon {
+    font-size: 24px;
+}
+
+.header-title {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+/* 主内容区 */
+.app-main {
+    flex: 1;
+    padding: 20px;
+    background: transparent;
+}
+
+.main-content {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 卡片通用样式 */
+.el-card {
+    border-radius: 12px;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.el-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* 欢迎卡片 */
+.welcome-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.welcome-card .el-card__body {
+    padding: 30px;
+}
+
+.welcome-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.welcome-icon {
+    font-size: 48px;
+    opacity: 0.9;
+}
+
+.welcome-text h3 {
+    margin-bottom: 16px;
+    font-size: 24px;
+}
+
+.feature-list {
+    margin-bottom: 16px;
+}
+
+.feature-list p {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.welcome-tip {
+    font-size: 14px;
+    opacity: 0.8;
+    font-style: italic;
+}
+
+/* 配置卡片 */
+.config-card .el-card__body {
+    padding: 30px;
+}
+
+.config-form {
+    max-width: 600px;
+}
+
+.form-tip {
+    font-size: 12px;
+    color: #909399;
+    margin-top: 4px;
+    margin-left: 100px;
+}
+
+.form-actions {
+    margin-top: 30px;
+    margin-bottom: 0;
+}
+
+.form-actions .el-form-item__content {
+    justify-content: flex-start;
+    gap: 16px;
+}
+
+.password-toggle {
+    cursor: pointer;
+    color: #909399;
+    transition: color 0.3s;
+}
+
+.password-toggle:hover {
+    color: #409EFF;
+}
+
+/* 信息卡片 */
+.info-card .el-card__body {
+    padding: 30px;
+}
+
+.info-content h4 {
+    color: #409EFF;
+    margin: 20px 0 12px 0;
+    font-size: 16px;
+}
+
+.info-content h4:first-child {
+    margin-top: 0;
+}
+
+.info-list {
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
+.info-list li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+    color: #606266;
+}
+
+.info-list strong {
+    color: #409EFF;
+    font-weight: 600;
+}
+
+.notice {
+    margin-top: 25px;
+}
+
+/* 底部样式 */
+.app-footer {
+    background: #2c3e50;
+    color: white;
+    padding: 0 20px;
+    margin-top: auto;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 50px;
+}
+
+.footer-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .app-main {
+        padding: 15px;
+    }
+
+    .main-content {
+        gap: 15px;
+    }
+
+    .welcome-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+
+    .welcome-icon {
+        font-size: 36px;
+    }
+
+    .config-form {
+        max-width: 100%;
+    }
+
+    .form-tip {
+        margin-left: 0;
+        text-align: left;
+    }
+
+    .form-actions .el-form-item__content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .form-actions .el-button {
+        width: 100%;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        justify-content: center;
+        gap: 8px;
+        text-align: center;
+        height: auto;
+        padding: 15px 0;
+    }
+}
+
+/* 加载动画 */
+.el-icon.is-loading {
+    animation: rotating 2s linear infinite;
+}
+
+@keyframes rotating {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
