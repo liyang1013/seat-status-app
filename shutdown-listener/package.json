@@ -1,0 +1,25 @@
+{
+    "name": "shutdown-listener",
+    "version": "1.0.0",
+    "description": "Native Windows shutdown listener for Electron",
+    "main": "index.js",
+    "scripts": {
+        "build": "node-gyp rebuild",
+        "clean": "node-gyp clean",
+        "install": "node-gyp rebuild"
+    },
+    "dependencies": {
+        "node-addon-api": "^6.1.0"
+    },
+    "devDependencies": {
+        "node-gyp": "^9.4.0"
+    },
+    "gypfile": true,
+    "keywords": [
+        "electron",
+        "shutdown",
+        "windows"
+    ],
+    "author": "yang.li",
+    "license": "MIT"
+}

@@ -1,0 +1,8 @@
+node_modules
+dist
+out
+.DS_Store
+.eslintcache
+*.log*
+shutdowm-lister/build
+shutdowm-lister/node_modules
