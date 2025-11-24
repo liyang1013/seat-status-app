@@ -1,8 +1,8 @@
 import { app, shell, BrowserWindow, Tray, Menu, powerMonitor } from 'electron'
-import path, { join } from 'path'
+import { join } from 'path'
 const AutoLaunch = require('auto-launch');
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-const shutdownListener = require(path.join(__dirname, '../../shutdown-listener'));
+import { winShutdownHandler } from '../../native/win-shutdown-handler';
 import icon from '../../resources/favicon.ico?asset'
 import controller from '@main/controller'
 import { SeatAPI } from '@main/api'
@@ -50,52 +50,6 @@ async function enableAutoLaunch() {
   } catch (error) {
     console.error('启用开机自启动失败:', error);
   }
-}
-
-function setupNativeShutdownListener(): void {
-  if (process.platform !== 'win32') return
-  console.log('设置原生关机监听器...')
-
-  try {
-    const success = shutdownListener.start((eventType: string) => {
-      console.log(`=== 原生监听器: 检测到 ${eventType} 事件 ===`)
-      emergencyShutdown()
-    })
-
-    if (success) {
-      console.log('原生关机监听器启动成功')
-    } else {
-      throw new Error('启动失败')
-    }
-
-  } catch (error) {
-    console.error('原生关机监听器启动失败:', error)
-    setupFallbackShutdownListener()
-  }
-}
-
-async function emergencyShutdown(): Promise<void> {
-  console.log('执行紧急关机处理...')
-
-  try {
-    sendSeatStatus(0)
-  } catch (error: any) {
-    console.error('紧急下机指令发送失败:', error.message)
-  }
-}
-
-function setupFallbackShutdownListener(): void {
-  console.log('使用备用关机监听方案')
-
-  powerMonitor.on('shutdown', () => {
-    console.log('powerMonitor: 检测到关机事件')
-    emergencyShutdown()
-  })
-
-  process.on('SIGTERM', () => {
-    console.log('收到 SIGTERM 信号')
-    emergencyShutdown()
-  })
 }
 
 function createWindow(): void {
@@ -230,7 +184,13 @@ app.whenReady().then(async () => {
 
   await enableAutoLaunch()
 
-  setupNativeShutdownListener()
+  winShutdownHandler.setMainWindowHandle(mainWindow!.getNativeWindowHandle())
+  winShutdownHandler.acquireShutdownBlock('座位下机中');
+  winShutdownHandler.insertWndProcHook(() => {
+    sendSeatStatus(0)
+    winShutdownHandler.releaseShutdownBlock();
+    app.quit()
+  });
 
   setTimeout(() => {
     sendSeatStatus(1);
@@ -244,7 +204,7 @@ app.whenReady().then(async () => {
 })
 
 app.on('will-quit', () => {
-    sendSeatStatus(0)
+  sendSeatStatus(0)
 });
 
 app.on('before-quit', (event) => {
@@ -252,13 +212,13 @@ app.on('before-quit', (event) => {
     event.preventDefault()
     mainWindow?.hide()
   } else {
-    shutdownListener.stop()
     sendSeatStatus(0)
   }
 });
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
+    winShutdownHandler.removeWndProcHook();
     app.quit()
   }
 })
