@@ -1,19 +1,23 @@
-import { app, shell, BrowserWindow, Tray, Menu, powerMonitor } from 'electron'
+import os from 'os'
 import { join } from 'path'
-const AutoLaunch = require('auto-launch');
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import { winShutdownHandler } from '../../native/win-shutdown-handler';
-import icon from '../../resources/favicon.ico?asset'
-import controller from '@main/controller'
 import { SeatAPI } from '@main/api'
 import configManager from '@main/store'
+import controller from '@main/controller'
+const AutoLaunch = require('auto-launch');
+import icon from '../../resources/favicon.ico?asset'
+import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { winShutdownHandler } from '../../native/win-shutdown-handler';
+import { app, shell, BrowserWindow, Tray, Menu, powerMonitor } from 'electron'
+
 
 let isQuitting = false;
 let mainWindow: BrowserWindow | null = null;
 let tray;
 
+/**
+ * Single Instance Lock
+ */
 const gotTheLock = app.requestSingleInstanceLock()
-
 if (!gotTheLock) {
   console.log('应用已在运行中，退出新实例')
   app.quit()
@@ -35,67 +39,9 @@ if (!gotTheLock) {
   })
 }
 
-const autoLauncher = new AutoLaunch({
-  name: '座位状态管理器',
-  path: app.getPath('exe'),
-});
-
-async function enableAutoLaunch() {
-  try {
-    const isEnabled = await autoLauncher.isEnabled();
-    if (!isEnabled) {
-      await autoLauncher.enable();
-      console.log('开机自启动已启用');
-    }
-  } catch (error) {
-    console.error('启用开机自启动失败:', error);
-  }
-}
-
-function createWindow(): void {
-  mainWindow = new BrowserWindow({
-    width: 450,
-    height: 205,
-    show: false,
-    autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
-    webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
-    },
-    icon: icon
-  })
-
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
-    return { action: 'deny' }
-  })
-
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
-  }
-
-  mainWindow.on('close', (event) => {
-    if (!isQuitting) {
-      event.preventDefault();
-      mainWindow?.hide();
-    }
-  });
-
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
-
-}
-
-function sendSeatStatus(status: number) {
-  const { seatCode, apiKey } = configManager.getConfig()
-  const api = new SeatAPI(apiKey)
-  api.modifySeatStatus(seatCode, status)
-}
-
+/**
+ * Create Tray
+ */
 function createTray() {
   tray = new Tray(icon);
 
@@ -151,6 +97,56 @@ function createTray() {
   });
 }
 
+/**
+ * Sytem Information
+ * @returns {hostname: string, mac: string, ip: string}
+ */
+function getSystemInfo() {
+  const interfaces = os.networkInterfaces()
+  let mac = ''
+  let ip = ''
+
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name]!) {
+      if (!iface.internal && iface.family === 'IPv4') {
+        mac = iface.mac
+        ip = iface.address
+        break
+      }
+    }
+    if (mac && ip) break
+  }
+
+  return {
+    hostname: os.hostname(),
+    mac: mac || 'Unknown',
+    ip: ip || 'Unknown'
+  }
+}
+
+/**
+ * Auto Launch Setup
+ */
+const autoLauncher = new AutoLaunch({
+  name: '座位状态管理器',
+  path: app.getPath('exe'),
+});
+
+async function enableAutoLaunch() {
+  try {
+    const isEnabled = await autoLauncher.isEnabled();
+    if (!isEnabled) {
+      await autoLauncher.enable();
+      console.log('开机自启动已启用');
+    }
+  } catch (error) {
+    console.error('启用开机自启动失败:', error);
+  }
+}
+
+/**
+ * Power Monitor Setup
+ */
 function setupPowerMonitor() {
 
   powerMonitor.on('lock-screen', () => {
@@ -172,11 +168,65 @@ function setupPowerMonitor() {
   });
 }
 
+/**
+ * 发送座位状态
+ * @param status 座位状态，1表示上机，0表示下机
+ */
+function sendSeatStatus(status: number) {
+  const { serverUrl, apiKey } = configManager.getServerConfig()
+  console.log(`发送座位状态: ${status === 1 ? '上机' : '下机'}`);
+  const api = new SeatAPI(apiKey, serverUrl)
+  api.modifySeatStatus(status)
+}
+
+/**
+ * Create Main Window
+ */
+function createWindow(): void {
+  mainWindow = new BrowserWindow({
+    width: 1200,
+    height: 600,
+    show: false,
+    autoHideMenuBar: true,
+    ...(process.platform === 'linux' ? { icon } : {}),
+    webPreferences: {
+      preload: join(__dirname, '../preload/index.js'),
+      sandbox: false
+    },
+    icon: icon
+  })
+
+  mainWindow.webContents.setWindowOpenHandler((details) => {
+    shell.openExternal(details.url)
+    return { action: 'deny' }
+  })
+
+  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+  } else {
+    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+  }
+
+  mainWindow.on('close', (event) => {
+    if (!isQuitting) {
+      event.preventDefault();
+      mainWindow?.hide();
+    }
+  });
+
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
+
+}
+
 app.whenReady().then(async () => {
   electronApp.setAppUserModelId('com.electron')
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
+
+  configManager.saveSystemInfo(getSystemInfo())
 
   controller()
   createWindow()

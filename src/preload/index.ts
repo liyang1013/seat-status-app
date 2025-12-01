@@ -2,9 +2,9 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 const api = {
-  loadConfig: async () => await ipcRenderer.invoke("get:config"),
-  saveConfig: async (config) => await ipcRenderer.invoke("save:config", config),
-  testConnection: async (config) => await ipcRenderer.invoke("test:connection", config)
+  loadConfig: async () => await ipcRenderer.invoke("get-config"),
+  saveConfig: async (config) => await ipcRenderer.invoke("save-config", config),
+  healthCheck: async (config) => await ipcRenderer.invoke("health-check", config)
 }
 
 if (process.contextIsolated) {
