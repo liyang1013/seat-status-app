@@ -23,7 +23,7 @@ class ConfigManager {
         },
         serverUrl: {
           type: 'string',
-          default: 'http://bq.qianying.ltd'
+          default: 'http://bq.qianying.ltd:8080'
         }
       }
     });

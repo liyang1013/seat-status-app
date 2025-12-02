@@ -9,13 +9,6 @@ files:
   - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
-  - 'out/**/*'
-  - 'build/Release/win_shutdown_handler.node'
-asar: true
-asarUnpack:
-  - build/Release/win_shutdown_handler.node
-extraResources:
-  - build/Release/win_shutdown_handler.node
 win:
   executableName: seat-status-app
   icon: resources/favicon.ico

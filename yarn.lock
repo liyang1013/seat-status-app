@@ -2693,6 +2693,11 @@ keyv@^4.0.0, keyv@^4.5.4:
   dependencies:
     json-buffer "3.0.1"
 
+koffi@^2.14.1:
+  version "2.14.1"
+  resolved "https://registry.npmjs.org/koffi/-/koffi-2.14.1.tgz"
+  integrity sha512-IMFL3IbRDXacSIjs7pPbPxgNlJ2hUtawQXU2QPdr6iw38jmv5AesAUG8HPX00xl0PPA2BbEa3noTw1YdHY+gHg==
+
 lazy-val@^1.0.5:
   version "1.0.5"
   resolved "https://registry.npmjs.org/lazy-val/-/lazy-val-1.0.5.tgz"
@@ -3973,9 +3978,9 @@ util-deprecate@^1.0.1, util-deprecate@^1.0.2, util-deprecate@~1.0.1:
   integrity sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==
 
 "vite@^5.0.0 || ^6.0.0 || ^7.0.0", vite@^7.1.6:
-  version "7.2.4"
-  resolved "https://registry.npmjs.org/vite/-/vite-7.2.4.tgz"
-  integrity sha512-NL8jTlbo0Tn4dUEXEsUg8KeyG/Lkmc4Fnzb8JXN/Ykm9G4HNImjtABMJgkQoVjOBN/j2WAwDTRytdqJbZsah7w==
+  version "7.2.6"
+  resolved "https://registry.npmjs.org/vite/-/vite-7.2.6.tgz"
+  integrity sha512-tI2l/nFHC5rLh7+5+o7QjKjSR04ivXDF4jcgV0f/bTQ+OJiITy5S6gaynVsEM+7RqzufMnVbIon6Sr5x1SDYaQ==
   dependencies:
     esbuild "^0.25.0"
     fdir "^6.5.0"

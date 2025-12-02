@@ -3,10 +3,10 @@ import { join } from 'path'
 import { SeatAPI } from '@main/api'
 import configManager from '@main/store'
 import controller from '@main/controller'
-const AutoLaunch = require('auto-launch');
+// const AutoLaunch = require('auto-launch');
+// import { shutdownListener } from '@main/shutdown'
 import icon from '../../resources/favicon.ico?asset'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import { winShutdownHandler } from '../../native/win-shutdown-handler';
 import { app, shell, BrowserWindow, Tray, Menu, powerMonitor } from 'electron'
 
 
@@ -127,22 +127,22 @@ function getSystemInfo() {
 /**
  * Auto Launch Setup
  */
-const autoLauncher = new AutoLaunch({
-  name: '座位状态管理器',
-  path: app.getPath('exe'),
-});
+// const autoLauncher = new AutoLaunch({
+//   name: '座位状态管理器',
+//   path: app.getPath('exe'),
+// });
 
-async function enableAutoLaunch() {
-  try {
-    const isEnabled = await autoLauncher.isEnabled();
-    if (!isEnabled) {
-      await autoLauncher.enable();
-      console.log('开机自启动已启用');
-    }
-  } catch (error) {
-    console.error('启用开机自启动失败:', error);
-  }
-}
+// async function enableAutoLaunch() {
+//   try {
+//     const isEnabled = await autoLauncher.isEnabled();
+//     if (!isEnabled) {
+//       await autoLauncher.enable();
+//       console.log('开机自启动已启用');
+//     }
+//   } catch (error) {
+//     console.error('启用开机自启动失败:', error);
+//   }
+// }
 
 /**
  * Power Monitor Setup
@@ -186,7 +186,7 @@ function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 600,
-    show: false,
+    show: true,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
@@ -232,15 +232,7 @@ app.whenReady().then(async () => {
   createWindow()
   createTray()
 
-  await enableAutoLaunch()
-
-  winShutdownHandler.setMainWindowHandle(mainWindow!.getNativeWindowHandle())
-  winShutdownHandler.acquireShutdownBlock('座位下机中');
-  winShutdownHandler.insertWndProcHook(() => {
-    sendSeatStatus(0)
-    winShutdownHandler.releaseShutdownBlock();
-    app.quit()
-  });
+  // await enableAutoLaunch()
 
   setTimeout(() => {
     sendSeatStatus(1);
@@ -248,28 +240,42 @@ app.whenReady().then(async () => {
 
   setupPowerMonitor();
 
+  // shutdownListener.registerShutdownListener(() => {
+    // console.log('执行关机前的命令...');
+    // 在这里执行你需要的命令，例如：
+    // 1. 同步保存数据到本地
+    // 2. 发送日志到服务器
+    // 3. 清理临时文件
+    // 注意：操作应尽快完成，系统不会等待太久。
+  // });
+
+
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
 
-app.on('will-quit', () => {
-  sendSeatStatus(0)
-});
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
 
 app.on('before-quit', (event) => {
   if (!isQuitting) {
     event.preventDefault()
     mainWindow?.hide()
-  } else {
-    sendSeatStatus(0)
   }
 });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    winShutdownHandler.removeWndProcHook();
-    app.quit()
-  }
-})
+app.on('will-quit', (_event) => {
+    // shutdownListener.unregisterShutdownListener();
+    sendSeatStatus(0)
+});
+
+app.on ('quit', () => {
+    console.log('应用已退出')
+});
+
+
 
