@@ -3,7 +3,7 @@ import { join } from 'path'
 import { SeatAPI } from '@main/api'
 import configManager from '@main/store'
 import controller from '@main/controller'
-// const AutoLaunch = require('auto-launch');
+const AutoLaunch = require('auto-launch');
 // import { shutdownListener } from '@main/shutdown'
 import icon from '../../resources/favicon.ico?asset'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
@@ -127,22 +127,22 @@ function getSystemInfo() {
 /**
  * Auto Launch Setup
  */
-// const autoLauncher = new AutoLaunch({
-//   name: '座位状态管理器',
-//   path: app.getPath('exe'),
-// });
+const autoLauncher = new AutoLaunch({
+  name: '座位状态管理器',
+  path: app.getPath('exe'),
+});
 
-// async function enableAutoLaunch() {
-//   try {
-//     const isEnabled = await autoLauncher.isEnabled();
-//     if (!isEnabled) {
-//       await autoLauncher.enable();
-//       console.log('开机自启动已启用');
-//     }
-//   } catch (error) {
-//     console.error('启用开机自启动失败:', error);
-//   }
-// }
+async function enableAutoLaunch() {
+  try {
+    const isEnabled = await autoLauncher.isEnabled();
+    if (!isEnabled) {
+      await autoLauncher.enable();
+      console.log('开机自启动已启用');
+    }
+  } catch (error) {
+    console.error('启用开机自启动失败:', error);
+  }
+}
 
 /**
  * Power Monitor Setup
@@ -186,7 +186,7 @@ function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 600,
-    show: true,
+    show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
@@ -232,7 +232,7 @@ app.whenReady().then(async () => {
   createWindow()
   createTray()
 
-  // await enableAutoLaunch()
+  await enableAutoLaunch()
 
   setTimeout(() => {
     sendSeatStatus(1);
