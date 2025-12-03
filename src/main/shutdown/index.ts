@@ -1,18 +1,11 @@
 // shutdownHandler.js
 const koffi = require('koffi');
-const path = require('path');
-
-// 1. 定义Koffi所需的Windows类型和函数签名
-const HANDLE = 'void *';
-const BOOL = 'bool';
-const DWORD = 'uint32';
 
 // Windows API: BOOL WINAPI SetConsoleCtrlHandler(PHANDLER_ROUTINE HandlerRoutine, BOOL Add)
 // PHANDLER_ROUTINE 是一个回调函数指针，原型为：BOOL WINAPI HandlerRoutine(DWORD dwCtrlType)
 const kernel32 = koffi.load('kernel32.dll'); // 加载系统DLL[citation:5][citation:8]
 
 // 定义控制台事件类型的枚举（部分）
-const CTRL_C_EVENT = 0;
 const CTRL_SHUTDOWN_EVENT = 6; // 系统关机事件
 
 // 2. 定义你的处理函数（将由Windows调用）

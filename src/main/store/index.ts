@@ -1,9 +1,14 @@
+import { app } from "electron";
+import path from "path";
+
 const Store = require('electron-store');
 
 class ConfigManager {
   private store
   constructor() {
     this.store = new Store({
+      cwd: this.getStorePath(),
+      name: 'config',
       schema: {
         apiKey: {
           type: 'string',
@@ -49,6 +54,21 @@ class ConfigManager {
     this.store.set('hostname', info.hostname);
     this.store.set('mac', info.mac);
     this.store.set('ip', info.ip);
+  }
+  getStorePath() {
+    let storagePath: string;
+
+    if (process.env.NODE_ENV !== 'development') {
+      storagePath = path.join(path.dirname(app.getPath('exe')), 'userdata');
+    } else {
+      storagePath = path.join(app.getPath('userData'), 'storage');
+    }
+    const fs = require('fs');
+    if (!fs.existsSync(storagePath)) {
+      fs.mkdirSync(storagePath, { recursive: true });
+    }
+
+    return storagePath;
   }
 }
 
